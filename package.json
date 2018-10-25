@@ -15,5 +15,21 @@
   "bugs": {
     "url": "https://gitlab.com/jeffycyang/least-squares/issues"
   },
-  "homepage": "https://gitlab.com/jeffycyang/least-squares#readme"
+  "homepage": "https://gitlab.com/jeffycyang/least-squares#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.11",
+    "html-webpack-plugin": "^3.2.0",
+    "style-loader": "^0.21.0",
+    "webpack": "^4.12.0",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
+  },
+  "dependencies": {
+    "react": "^16.6.0",
+    "react-dom": "^16.6.0"
+  }
 }
