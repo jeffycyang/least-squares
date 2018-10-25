@@ -12,10 +12,20 @@ class Graph extends Component {
     }
   }
 
+  componentDidMount() {
+
+  }
+
+  componentDidUpdate() {
+
+  }
+
   render() {
     return (
       <Plot />
     )
+    // degree & other controls
+    // display equation
   }
 }
 
