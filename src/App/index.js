@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Graph from './Graph'
 
 class App extends Component {
   constructor(props) {
@@ -8,6 +9,7 @@ class App extends Component {
   render() {
     return (
       <div>
+        <Graph />
       </div>
     )
   }
