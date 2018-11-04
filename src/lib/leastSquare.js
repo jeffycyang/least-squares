@@ -1,5 +1,5 @@
 // Returns the inverse of matrix `M`.
-export const invertMatrix = M => {
+export const matrixInvert = M => {
   // I use Guassian Elimination to calculate the inverse:
   // (1) 'augment' the matrix (left) by the identity (on the right)
   // (2) Turn the matrix on the left into the identity by elemetry row ops
@@ -246,7 +246,7 @@ export const leastSqr = (type, xVal, yVal, order) => {
         yV = createY(type, yVal),
         xT = transposeArray(xM),
         xTX = matrixMultiply(xT, xM),
-        invXTX = matrix_invert(xTX),
+        invXTX = matrixInvert(xTX),
         xTY = matrixMultiply(xT, yV)
 
   if (type === 0 || type=== 2 || type === 3) return matrixMultiply(invXTX, xTY)

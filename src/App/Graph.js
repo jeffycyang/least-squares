@@ -1,17 +1,19 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Plot from 'react-plotly.js'
+import { leastSqr } from '../lib/leastSquare'
 
 class Graph extends Component {
   static propTypes = {
-    points: PropTypes.array,
+    dataPoints: PropTypes.array,
     equationType: PropTypes.string, // poly, trig, exp, log
   }
 
   state = {
     degree: 0,
     functionPoints: [],
-    functionCoefficients: []
+    functionCoefficients: [],
+    solution: []
   }
 
   constructor(props) {
@@ -22,12 +24,23 @@ class Graph extends Component {
 
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
+    console.log('points', this.props.dataPoints)
+    const { dataPoints } = this.props
 
+    if (dataPoints !== prevProps.dataPoints) {
+      const x =[], y = []
+      dataPoints.forEach(point => {
+        x.push(point.x)
+        y.push(point.y)
+      })
+      const solution = leastSqr(0, x, y, 4)
+      console.log('solution', solution)
+      this.setState({ solution })
+    }
   }
 
   render() {
-    // test data:
     const granularity = 100,
           domain = [-5, 5],
           increment = (domain[1] - domain[0]) / granularity
@@ -37,10 +50,22 @@ class Graph extends Component {
       x.push(current)
       current += increment
     }
-    // test function:
-    const func = x => Math.pow(x, 3)
+
+    const { solution } = this.state
+
+    console.log('solution', solution)
+
     const y = []
-    x.forEach(el => y.push(func(el)))
+    x.forEach(xVal => y.push(
+      solution.reduce((acc, curr, ind) => acc + (curr[0] * Math.pow(xVal, ind)), 0)
+    ))
+
+    const { dataPoints } = this.props
+    const dataX =[], dataY = []
+    dataPoints.forEach(point => {
+      dataX.push(point.x)
+      dataY.push(point.y)
+    })
 
     return (
       <Plot
@@ -50,7 +75,14 @@ class Graph extends Component {
             y,
             type: 'scatter',
             mode: 'lines+points',
-            marker: { color: 'red' },
+            marker: { color: 'red' }
+          },
+          {
+            x: dataX,
+            y: dataY,
+            type: 'scatter',
+            mode: 'markers',
+            marker: { color: 'blue' }
           }
         ]}
         layout={{
@@ -60,6 +92,41 @@ class Graph extends Component {
         }}
       />
     )
+
+    // TEST
+    // // test data:
+    // const granularity = 100,
+    //       domain = [-5, 5],
+    //       increment = (domain[1] - domain[0]) / granularity
+    // const x = []
+    // let current = domain[0]
+    // for (let i = 0; i < granularity; i++) {
+    //   x.push(current)
+    //   current += increment
+    // }
+    // // test function:
+    // const func = x => Math.pow(x, 3)
+    // const y = []
+    // x.forEach(el => y.push(func(el)))
+
+    // return (
+    //   <Plot
+    //     data={[
+    //       {
+    //         x,
+    //         y,
+    //         type: 'scatter',
+    //         mode: 'lines+points',
+    //         marker: { color: 'red' },
+    //       }
+    //     ]}
+    //     layout={{
+    //       width: 640,
+    //       height: 480,
+    //       title: 'Least Squares Regression'
+    //     }}
+    //   />
+    // )
     // degree & other controls
     // display equation
   }
