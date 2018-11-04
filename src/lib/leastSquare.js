@@ -159,7 +159,9 @@ export const createX = (type, xValues, order) => {
   let xArray
 
   if (order) {
-    xArray = new Array(order - 1)
+    console.log('xval', xValues.length, 'order', order - 1)
+    xArray = new Array(Math.min(xValues.length, order - 1))
+    // xArray = new Array(order - 1)
   } else {
     xArray = []
   }
@@ -225,6 +227,7 @@ export const createY = (type, yValues) => {
 }
 
 export const transposeArray = arr => {
+  console.log('arr',arr)
   const newArray = [],
         numCol = arr[0].length
 
