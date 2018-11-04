@@ -39,3 +39,10 @@ class App extends Component {
 }
 
 export default App
+
+// (
+//   <Graph
+//     equationType="poly"
+//     dataPoints={dataPoints}
+//   />
+// )

@@ -3,6 +3,13 @@ import PropTypes from 'prop-types'
 import Plot from 'react-plotly.js'
 import { leastSqr } from '../lib/leastSquare'
 
+const typeMap = {
+  poly: 0,
+  expo: 1,
+  trig: 2,
+  log:  3
+}
+
 class Graph extends Component {
   static propTypes = {
     dataPoints: PropTypes.array,
@@ -26,7 +33,8 @@ class Graph extends Component {
 
   componentDidUpdate(prevProps) {
     console.log('points', this.props.dataPoints)
-    const { dataPoints } = this.props
+    const { dataPoints, equationType } = this.props
+    const type = typeMap[equationType]
 
     if (dataPoints !== prevProps.dataPoints) {
       const x =[], y = []
@@ -34,14 +42,20 @@ class Graph extends Component {
         x.push(point.x)
         y.push(point.y)
       })
-      const solution = leastSqr(0, x, y, 4)
-      console.log('solution', solution)
+      const solution = leastSqr(type, x, y, 4)
       this.setState({ solution })
     }
   }
 
   render() {
-    const granularity = 100,
+    const { dataPoints, equationType } = this.props
+    const dataX =[], dataY = []
+    dataPoints.forEach(point => {
+      dataX.push(point.x)
+      dataY.push(point.y)
+    })
+
+    const granularity = 500,
           domain = [-5, 5],
           increment = (domain[1] - domain[0]) / granularity
     const x = []
@@ -56,33 +70,39 @@ class Graph extends Component {
     console.log('solution', solution)
 
     const y = []
+    const type = typeMap[equationType]
     x.forEach(xVal => y.push(
-      solution.reduce((acc, curr, ind) => acc + (curr[0] * Math.pow(xVal, ind)), 0)
-    ))
 
-    const { dataPoints } = this.props
-    const dataX =[], dataY = []
-    dataPoints.forEach(point => {
-      dataX.push(point.x)
-      dataY.push(point.y)
-    })
+      // solution.reduce((acc, curr, ind) => acc + (curr[0] * Math.pow(xVal, ind)), 0)
+
+      solution.reduce((acc, curr, ind) => {
+        if (type === 0) return acc + (curr[0] * Math.pow(xVal, ind))
+
+        if (type === 2) {
+          if (ind === 0) return acc + curr[0]
+          // if (ind % 2 === 1) return acc + (curr[0] * Math.sin(ind * xVal))
+          // if (ind % 2 === 0) return acc + (curr[0] * Math.cos(ind * xVal))
+          return acc + (curr[0] * (Math.cos(ind * xVal) + Math.sin(ind * xVal)))
+        }
+      }, 0)
+    ))
 
     return (
       <Plot
         data={[
-          {
-            x,
-            y,
-            type: 'scatter',
-            mode: 'lines+points',
-            marker: { color: 'red' }
-          },
           {
             x: dataX,
             y: dataY,
             type: 'scatter',
             mode: 'markers',
             marker: { color: 'blue' }
+          },
+          {
+            x,
+            y,
+            type: 'scatter',
+            mode: 'lines+points',
+            marker: { color: 'red' }
           }
         ]}
         layout={{
