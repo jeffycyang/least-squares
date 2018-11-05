@@ -48,7 +48,7 @@ class Graph extends Component {
       // const solution = leastSqr(type, x, y, 4)
       // this.setState({ solution })
 
-      const solution = leastSqr(type, xEx, yEx, 8)
+      const solution = leastSqr(type, xEx, yEx, 9)
       this.setState({ solution })
     }
   }
