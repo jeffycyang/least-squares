@@ -1,55 +1,61 @@
-// Returns the inverse of matrix `M`.
+// types:
+//   0 - polynomial,
+//   1 - trigonometric (discrete integer),
+//   2 - exponential,
+//   3 - logarithmic
+// degree only matters for polynomial & trigonometric
+
 export const matrixInvert = M => {
-  // I use Guassian Elimination to calculate the inverse:
+  // Calculated using Guassian Elimination:
   // (1) 'augment' the matrix (left) by the identity (on the right)
   // (2) Turn the matrix on the left into the identity by elemetry row ops
   // (3) The matrix on the right is the inverse (was the identity matrix)
-  // There are 3 elemtary row ops: (I combine b and c in my code)
+  // Three elementary row ops: (b & c combined in code)
   // (a) Swap 2 rows
   // (b) Multiply a row by a scalar
   // (c) Add 2 rows
 
-  // If the matrix isn't square: exit (error)
+  // If the matrix isn't square, return (error)
   if (M.length !== M[0].length) return
 
-  // Create the identity matrix (I), and a copy (C) of the original
+  // Create identity matrix (I), and a copy (C) of the original
   const dim = M.length, I = [], C = []
   let i = 0, ii = 0, j = 0, e = 0, t = 0
 
   for (i = 0 ; i < dim ; i += 1) {
 
-    // Create the row
+    // Create row
     I[I.length] = []
     C[C.length] = []
     for ( j = 0 ; j < dim ; j += 1) {
 
-      // If we're on the diagonal, put a 1 (for identity)
+      // If on diagonal, put 1 (for identity)
       if (i === j) {
         I[i][j] = 1
       } else {
         I[i][j] = 0
       }
 
-      // Also, make the copy of the original
+      // Make copy of original
       C[i][j] = M[i][j]
     }
   }
 
   // Perform elementary row operations
   for (i = 0 ; i < dim ; i += 1) {
-    // Get the element e on the diagonal
+    // Get element e on diagonal
     e = C[i][i]
 
-    // If we have a 0 on the diagonal (we'll need to swap with a lower row)
+    // If 0 on diagonal (swap with a lower row)
     if (e === 0) {
 
-      // Look through every row below the i'th row
+      // Look through every row below i'th row
       for (ii = i + 1 ; ii < dim ; ii += 1) {
 
-        // If the ii'th row has a non-0 in the i'th col
+        // If ii'th row has non-0 in the i'th col
         if (C[ii][i] !== 0) {
 
-          // It would make the diagonal have a non-0 so swap it
+          // It would make diagonal have a non-0 so swap
           for (j = 0 ; j < dim ; j++) {
             e = C[i][j]       //temp store i'th row
             C[i][j] = C[ii][j]//replace i'th row by ii'th
@@ -59,39 +65,39 @@ export const matrixInvert = M => {
             I[ii][j] = e      //repace ii'th by temp
           }
 
-          // Don't bother checking other rows since we've swapped
+          // Don't bother checking other rows since swap has been performed
           break
         }
       }
 
-      // Get the new diagonal
+      // Get new diagonal
       e = C[i][i]
 
-      // If it's still 0, not invertable (error)
+      // If still 0, M not invertable (error)
       if (e === 0) return
     }
 
-    // Scale this row down by e (so we have a 1 on the diagonal)
+    // Scale row down by e (to have a 1 on diagonal)
     for (j = 0 ; j < dim ; j++) {
       C[i][j] = C[i][j] / e //apply to original matrix
       I[i][j] = I[i][j] / e //apply to identity
     }
 
-    // Subtract this row (scaled appropriately for each row) from ALL of
-    // the other rows so that there will be 0's in this column in the
-    // rows above and below this one
+    // Subtract this row (scaled appropriately for each row) from ALL
+    // other rows so there will be 0's in this column in the rows above
+    // and below this one
     for (ii = 0 ; ii < dim ; ii++) {
 
-      // Only apply to other rows (we want a 1 on the diagonal)
+      // Only apply to other rows (want 1 on diagonal)
       if (ii === i) continue
 
-      // We want to change this element to 0
+      // Want to change this element to 0
       e = C[ii][i]
 
       // Subtract (the row above(or below) scaled by e) from (the
       // current row) but start at the i'th column and assume all the
-      // stuff left of diagonal is 0 (which it should be if we made this
-      // algorithm correctly)
+      // stuff left of diagonal is 0 (should be true if no error in
+      // algorithm)
       for (j = 0 ; j < dim ; j++) {
         C[ii][j] -= e * C[i][j] //apply to original matrix
         I[ii][j] -= e * I[i][j] //apply to identity
@@ -99,8 +105,8 @@ export const matrixInvert = M => {
     }
   }
 
-  // We've done all operations, C should be the identity
-  // & matrix I should be the inverse:
+  // All operations completed, C is identity matrix &
+  // matrix I is inverse of M
   return I
 }
 
@@ -155,55 +161,46 @@ export const matrixMultiply = (Q, P) => {
   return prod
 }
 
-export const createX = (type, xValues, order) => {
+export const createX = (type, xValues, degree) => {
   let xArray
 
-  if (order) {
-    xArray = new Array(Math.min(xValues.length, order - 1))
-    // console.log('xval', xValues.length, 'order', order - 1)
-    // xArray = new Array(order - 1)
+  if ((type === 0 || type === 1) && degree) {
+    xArray = new Array(Math.min(xValues.length, degree - 1))
   } else {
     xArray = []
   }
 
-  // type 0 - polynomial, 1 - exponential, 2 - trigonometric, 3 - logarithmic
-  // order only matters for polynomial & trigonometric
+  // type 0 - polynomial, 1 - trigonometric, 2 - exponential, 3 - logarithmic
+  // degree only matters for polynomial & trigonometric
+  for (let i = 0 ; i < xValues.length ; i++) {
 
-  // type 0, 2 (poly & trig)
-  if (type === 0 || type === 2) {
-    for (let i = 0 ; i < xValues.length ; i++) {
+    if (type === 0) {
+        xArray[i] = new Array(degree)
 
-      if (type === 0) {
-          xArray[i] = new Array(order)
-          for (let j = 0 ; j < order ; j++) {
-              xArray[i][j] = Math.pow(xValues[i], j)
-          }
-      }
+        for (let j = 0 ; j < degree ; j++) {
+          xArray[i][j] = Math.pow(xValues[i], j)
+        }
+    }
 
-      if (type === 2) {
-        xArray[i] = new Array(order * 2)
-        //this for loop is not working properly
-        let trigOrder = 1
-        for (let j = 0 ; j <= order * 2 ; j += 2) {
-          if (j === 0) {
-            xArray[i][j] = 1
-          } else {
-            xArray[i][j - 1] = Math.sin(trigOrder * xValues[i])
-            xArray[i][j] = Math.cos(trigOrder * xValues[i])
-            trigOrder++
-          }
+    if (type === 1) {
+      let trigDegree = 1
+      xArray[i] = new Array(degree * 2)
+
+      // this for loop not working properly???
+      for (let j = 0 ; j <= degree * 2 ; j += 2) {
+        if (j === 0) {
+          xArray[i][j] = 1
+        } else {
+          xArray[i][j - 1] = Math.sin(trigDegree * xValues[i])
+          xArray[i][j] = Math.cos(trigDegree * xValues[i])
+          trigDegree++
         }
       }
     }
 
-  // type 1, 3 (exp & log)
-  } else {
-    for (let i = 0 ; i < xValues.length ; i++) {
+    if (type === 2) xArray.push([1, xValues[i]])
 
-      if (type === 1) xArray.push([1, xValues[i]])
-
-      if (type === 3) xArray.push([1, Math.log(xValues[i])])
-    }
+    if (type === 3) xArray.push([1, Math.log(xValues[i])])
   }
 
   return xArray
@@ -220,13 +217,14 @@ export const createY = (type, yValues) => {
   // type 0 - polynomial, 1 - exponential, 2 - trigonometric, 3 - logarithmic
   // only need to consider exponential
   for (let j = 0 ; j < yValues.length ; j++) {
-    if (type === 1) yVector[j][0] = Math.log(yVector[j][0])
+    if (type === 2) yVector[j][0] = Math.log(yVector[j][0])
   }
 
   return yVector
 }
 
 export const transposeArray = arr => {
+console.log('arr', arr)
   const newArray = [],
         numCol = arr[0].length
 
@@ -243,8 +241,8 @@ export const transposeArray = arr => {
   return newArray
 }
 
-export const leastSqr = (type, xVal, yVal, order) => {
-  const xM = createX(type, xVal, order),
+export const leastSqr = (type, xVal, yVal, degree) => {
+  const xM = createX(type, xVal, degree),
         yV = createY(type, yVal),
         xT = transposeArray(xM),
         xTX = matrixMultiply(xT, xM),
@@ -254,8 +252,8 @@ export const leastSqr = (type, xVal, yVal, order) => {
   if (type === 0 || type=== 2 || type === 3) return matrixMultiply(invXTX, xTY)
 
   if (type === 1) {
-    const solut = matrixMultiply(invXTX, xTY)
-    solut[0][0] = Math.exp(solut[0][0])
-    return solut
+    const solution = matrixMultiply(invXTX, xTY)
+    solution[0][0] = Math.exp(solution[0][0])
+    return solution
   }
 }

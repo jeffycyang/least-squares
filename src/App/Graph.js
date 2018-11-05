@@ -3,13 +3,13 @@ import PropTypes from 'prop-types'
 import Plot from 'react-plotly.js'
 import { leastSqr } from '../lib/leastSquare'
 
-const xEx=[0.5,1.2,1.565,2.22,2.357,2.87,3.15,3.549,3.77,4.17,3.698,4.314,4.87,5.101,5.309,5.662,5.72,6.12,6.809,6.59,7.0875,7.571,7.954]
-const yEx=[0.333,2.16,2.77,4.447,3.929,5.33,4.671,4.56,5.233,5.83,5.517,5.786,5.13,5.32,4.977,4.597,4.83,4.013,3.577,3.309,2.764,2.106,1.397]
+const xEx = [0.5,1.2,1.565,2.22,2.357,2.87,3.15,3.549,3.77,4.17,3.698,4.314,4.87,5.101,5.309,5.662,5.72,6.12,6.809,6.59,7.0875,7.571,7.954]
+const yEx = [0.333,2.16,2.77,4.447,3.929,5.33,4.671,4.56,5.233,5.83,5.517,5.786,5.13,5.32,4.977,4.597,4.83,4.013,3.577,3.309,2.764,2.106,1.397]
 
 const typeMap = {
   poly: 0,
-  expo: 1,
-  trig: 2,
+  trig: 1,
+  exp:  2,
   log:  3
 }
 
@@ -35,8 +35,8 @@ class Graph extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    console.log('points', this.props.dataPoints)
     const { dataPoints, equationType } = this.props
+    console.log('points', dataPoints)
     const type = typeMap[equationType]
 
     if (dataPoints !== prevProps.dataPoints) {
@@ -45,10 +45,11 @@ class Graph extends Component {
         x.push(point.x)
         y.push(point.y)
       })
+
       // const solution = leastSqr(type, x, y, 4)
       // this.setState({ solution })
 
-      const solution = leastSqr(type, xEx, yEx, 9)
+      const solution = leastSqr(type, xEx, yEx, 8)
       this.setState({ solution })
     }
   }
@@ -63,7 +64,7 @@ class Graph extends Component {
     const dataX = xEx, dataY = yEx
 
     const granularity = 500,
-          domain = [-5, 12],
+          domain = [-5, 15],
           increment = (domain[1] - domain[0]) / granularity
     const x = []
     let current = domain[0]
@@ -80,25 +81,27 @@ class Graph extends Component {
     const type = typeMap[equationType]
     x.forEach(xVal => {
       let order = 1
-      return y.push(
-
-        // solution.reduce((acc, curr, ind) => acc + (curr[0] * Math.pow(xVal, ind)), 0)
-
+      y.push(
         solution.reduce((acc, curr, ind) => {
           if (type === 0) return acc + (curr[0] * Math.pow(xVal, ind))
 
-          if (type === 2) {
+          if (type === 1) {
             if (ind === 0) return acc + curr[0]
-
             if (ind % 2 === 1) return acc + (curr[0] * Math.sin(order * xVal))
             if (ind % 2 === 0) return acc + (curr[0] * Math.cos(order++ * xVal))
-
-            // return acc + (curr[0] * (Math.cos(ind * xVal) + Math.sin(ind * xVal)))
           }
-        }, 0)
+
+          if (type === 2) {
+            if (ind === 0) return acc * curr[0]
+            if (ind === 1) return acc * Math.exp(curr[0] * xVal) 
+          }
+
+          if (type === 3) {
+
+          }
+        }, (type === 0 || type === 1) ? 0 : 1)
       )
-      }
-    )
+    })
 
     return (
       <Plot
