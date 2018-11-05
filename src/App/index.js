@@ -30,7 +30,7 @@ class App extends Component {
     return (
       <div>
         <Graph
-          equationType="exp" // poly, trig, exp, log
+          equationType="trig" // poly, trig, exp, log
           dataPoints={dataPoints}
         />
       </div>
