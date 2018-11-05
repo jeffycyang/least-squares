@@ -17,6 +17,10 @@ class App extends Component {
     })
   }
 
+  componentDidUpdate() {
+    // set new equationType / dataPoints / degree
+  }
+
   render() {
     const { dataPoints } = this.state
 
