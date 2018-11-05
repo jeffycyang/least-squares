@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Graph from './Graph'
+import { randomSmall, trendMedium } from '../lib/sampleData'
 
 class App extends Component {
   state = {
@@ -12,15 +13,7 @@ class App extends Component {
 
   componentDidMount() {
     this.setState({
-      dataPoints: [
-        { x: -3, y:  1.428 },
-        { x: -2, y: -3.125 },
-        { x: -1, y: -2.203 },
-        { x:  0, y:  0.320 },
-        { x:  1, y:  5.234 },
-        { x:  2, y: -1.201 },
-        { x:  3, y:  2.511 }
-      ]
+      dataPoints: trendMedium
     })
   }
 

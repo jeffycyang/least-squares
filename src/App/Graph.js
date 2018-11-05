@@ -3,9 +3,6 @@ import PropTypes from 'prop-types'
 import Plot from 'react-plotly.js'
 import { leastSqr } from '../lib/leastSquare'
 
-const xEx = [0.5,1.2,1.565,2.22,2.357,2.87,3.15,3.549,3.77,4.17,3.698,4.314,4.87,5.101,5.309,5.662,5.72,6.12,6.809,6.59,7.0875,7.571,7.954]
-const yEx = [0.333,2.16,2.77,4.447,3.929,5.33,4.671,4.56,5.233,5.83,5.517,5.786,5.13,5.32,4.977,4.597,4.83,4.013,3.577,3.309,2.764,2.106,1.397]
-
 const typeMap = {
   poly: 0,
   trig: 1,
@@ -36,7 +33,6 @@ class Graph extends Component {
 
   componentDidUpdate(prevProps) {
     const { dataPoints, equationType } = this.props
-    console.log('points', dataPoints)
     const type = typeMap[equationType]
 
     if (dataPoints !== prevProps.dataPoints) {
@@ -46,22 +42,18 @@ class Graph extends Component {
         y.push(point.y)
       })
 
-      // const solution = leastSqr(type, x, y, 4)
-      // this.setState({ solution })
-
-      const solution = leastSqr(type, xEx, yEx, 8)
+      const solution = leastSqr(type, x, y, 4)
       this.setState({ solution })
     }
   }
 
   render() {
     const { dataPoints, equationType } = this.props
-    // const dataX =[], dataY = []
-    // dataPoints.forEach(point => {
-    //   dataX.push(point.x)
-    //   dataY.push(point.y)
-    // })
-    const dataX = xEx, dataY = yEx
+    const dataX =[], dataY = []
+    dataPoints.forEach(point => {
+      dataX.push(point.x)
+      dataY.push(point.y)
+    })
 
     const granularity = 500,
           domain = [-5, 15],
