@@ -224,7 +224,6 @@ export const createY = (type, yValues) => {
 }
 
 export const transposeArray = arr => {
-console.log('arr', arr)
   const newArray = [],
         numCol = arr[0].length
 
@@ -249,11 +248,14 @@ export const leastSqr = (type, xVal, yVal, degree) => {
         invXTX = matrixInvert(xTX),
         xTY = matrixMultiply(xT, yV)
 
-  if (type === 0 || type=== 2 || type === 3) return matrixMultiply(invXTX, xTY)
+  const solution = matrixMultiply(invXTX, xTY)
 
-  if (type === 1) {
+  // special case for exponential
+  if (type === 2) {
     const solution = matrixMultiply(invXTX, xTY)
     solution[0][0] = Math.exp(solution[0][0])
     return solution
   }
+
+  return solution
 }
