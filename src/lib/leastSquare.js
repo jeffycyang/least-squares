@@ -256,10 +256,9 @@ export const solutionToFunc = (solution, type) =>
     if (type === 0) return acc + (curr[0] * Math.pow(x, ind))
 
     if (type === 1) {
-      if (ind === 0) return acc + curr[0]
       const period = Math.ceil(ind / 2)
-      if (ind % 2 === 1) return acc + (curr[0] * Math.sin(period * x))
       if (ind % 2 === 0) return acc + (curr[0] * Math.cos(period * x))
+      if (ind % 2 === 1) return acc + (curr[0] * Math.sin(period * x))
     }
 
     if (type === 2) {
