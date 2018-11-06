@@ -72,26 +72,26 @@ class Graph extends Component {
     const y = []
     const type = typeMap[equationType]
     x.forEach(xVal => {
-      let order = 1
       y.push(
         solution.reduce((acc, curr, ind) => {
           if (type === 0) return acc + (curr[0] * Math.pow(xVal, ind))
 
           if (type === 1) {
-            if (ind === 0) return acc + curr[0]
-            if (ind % 2 === 1) return acc + (curr[0] * Math.sin(order * xVal))
-            if (ind % 2 === 0) return acc + (curr[0] * Math.cos(order++ * xVal))
+            const period = Math.ceil(ind / 2)
+            if (ind % 2 === 0) return acc + (curr[0] * Math.cos(period * xVal))
+            if (ind % 2 === 1) return acc + (curr[0] * Math.sin(period * xVal))
           }
 
           if (type === 2) {
-            if (ind === 0) return acc * curr[0]
-            if (ind === 1) return acc * Math.exp(curr[0] * xVal) 
+            if (ind === 0) return acc * Math.exp(curr[0])
+            if (ind === 1) return acc * Math.exp(curr[0] * xVal)
           }
 
           if (type === 3) {
-
+            if (ind === 0) return acc + curr[0]
+            if (ind === 1) return acc + (curr[0] * Math.log(xVal))
           }
-        }, (type === 0 || type === 1) ? 0 : 1)
+        }, (type !== 2) ? 0 : 1)
       )
     })
 
@@ -109,7 +109,7 @@ class Graph extends Component {
             x,
             y,
             type: 'scatter',
-            mode: 'lines+points',
+            mode: 'lines',
             marker: { color: 'red' }
           }
         ]}

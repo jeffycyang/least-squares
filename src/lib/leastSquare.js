@@ -248,14 +248,27 @@ export const leastSqr = (type, xVal, yVal, degree) => {
         invXTX = matrixInvert(xTX),
         xTY = matrixMultiply(xT, yV)
 
-  const solution = matrixMultiply(invXTX, xTY)
-
-  // special case for exponential
-  if (type === 2) {
-    const solution = matrixMultiply(invXTX, xTY)
-    solution[0][0] = Math.exp(solution[0][0])
-    return solution
-  }
-
-  return solution
+  return matrixMultiply(invXTX, xTY)
 }
+
+export const solutionToFunc = (solution, type) =>
+  x => solution.reduce((acc, curr, ind) => {
+    if (type === 0) return acc + (curr[0] * Math.pow(x, ind))
+
+    if (type === 1) {
+      if (ind === 0) return acc + curr[0]
+      const period = Math.ceil(ind / 2)
+      if (ind % 2 === 1) return acc + (curr[0] * Math.sin(period * x))
+      if (ind % 2 === 0) return acc + (curr[0] * Math.cos(period * x))
+    }
+
+    if (type === 2) {
+      if (ind === 0) return acc * curr[0]
+      if (ind === 1) return acc * Math.exp(curr[0] * x)
+    }
+
+    if (type === 3) {
+      if (ind === 0) return acc + curr[0]
+      if (ind === 1) return acc + (curr[0] * Math.log(x))
+    }
+  }, (type !== 2) ? 0 : 1)

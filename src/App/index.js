@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Graph from './Graph'
-import { randomSmall, trendMedium } from '../lib/sampleData'
+import { randomSmall, trendMedium, testExp } from '../lib/sampleData'
 
 class App extends Component {
   state = {
