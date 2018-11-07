@@ -162,38 +162,28 @@ export const matrixMultiply = (Q, P) => {
 }
 
 export const createX = (type, xValues, degree) => {
-  let xArray
-
-  if ((type === 0 || type === 1) && degree) {
-    xArray = new Array(Math.min(xValues.length, degree - 1))
-  } else {
-    xArray = []
-  }
+  const xArray = []
 
   // type 0 - polynomial, 1 - trigonometric, 2 - exponential, 3 - logarithmic
   // degree only matters for polynomial & trigonometric
   for (let i = 0 ; i < xValues.length ; i++) {
 
     if (type === 0) {
-        xArray[i] = new Array(degree)
-
+        xArray[i] = []
         for (let j = 0 ; j < degree ; j++) {
           xArray[i][j] = Math.pow(xValues[i], j)
         }
     }
 
     if (type === 1) {
-      let trigDegree = 1
-      xArray[i] = new Array(degree * 2)
-
-      // this for loop not working properly???
+      xArray[i] = []
       for (let j = 0 ; j <= degree * 2 ; j += 2) {
         if (j === 0) {
           xArray[i][j] = 1
         } else {
-          xArray[i][j - 1] = Math.sin(trigDegree * xValues[i])
-          xArray[i][j] = Math.cos(trigDegree * xValues[i])
-          trigDegree++
+          const period = j / 2
+          xArray[i][j - 1] = Math.sin(period * xValues[i])
+          xArray[i][j] = Math.cos(period * xValues[i])
         }
       }
     }
@@ -205,6 +195,50 @@ export const createX = (type, xValues, degree) => {
 
   return xArray
 }
+// export const createX = (type, xValues, degree) => {
+//   let xArray
+
+//   if ((type === 0 || type === 1) && degree) {
+//     xArray = new Array(Math.min(xValues.length, degree - 1))
+//   } else {
+//     xArray = []
+//   }
+
+//   // type 0 - polynomial, 1 - trigonometric, 2 - exponential, 3 - logarithmic
+//   // degree only matters for polynomial & trigonometric
+//   for (let i = 0 ; i < xValues.length ; i++) {
+
+//     if (type === 0) {
+//         xArray[i] = new Array(degree)
+
+//         for (let j = 0 ; j < degree ; j++) {
+//           xArray[i][j] = Math.pow(xValues[i], j)
+//         }
+//     }
+
+//     if (type === 1) {
+//       let trigDegree = 1
+//       xArray[i] = new Array(degree * 2)
+
+//       // this for loop not working properly???
+//       for (let j = 0 ; j <= degree * 2 ; j += 2) {
+//         if (j === 0) {
+//           xArray[i][j] = 1
+//         } else {
+//           xArray[i][j - 1] = Math.sin(trigDegree * xValues[i])
+//           xArray[i][j] = Math.cos(trigDegree * xValues[i])
+//           trigDegree++
+//         }
+//       }
+//     }
+
+//     if (type === 2) xArray.push([1, xValues[i]])
+
+//     if (type === 3) xArray.push([1, Math.log(xValues[i])])
+//   }
+
+//   return xArray
+// }
 
 export const createY = (type, yValues) => {
   const yVector = []
