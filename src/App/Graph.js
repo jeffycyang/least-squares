@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Plot from 'react-plotly.js'
-import { leastSqr } from '../lib/leastSquare'
+import { leastSqr, solutionToFunc } from '../lib/leastSquare'
 
 const typeMap = {
   poly: 0,
@@ -71,29 +71,8 @@ class Graph extends Component {
 
     const y = []
     const type = typeMap[equationType]
-    x.forEach(xVal => {
-      y.push(
-        solution.reduce((acc, curr, ind) => {
-          if (type === 0) return acc + (curr[0] * Math.pow(xVal, ind))
-
-          if (type === 1) {
-            const period = Math.ceil(ind / 2)
-            if (ind % 2 === 0) return acc + (curr[0] * Math.cos(period * xVal))
-            if (ind % 2 === 1) return acc + (curr[0] * Math.sin(period * xVal))
-          }
-
-          if (type === 2) {
-            if (ind === 0) return acc * Math.exp(curr[0])
-            if (ind === 1) return acc * Math.exp(curr[0] * xVal)
-          }
-
-          if (type === 3) {
-            if (ind === 0) return acc + curr[0]
-            if (ind === 1) return acc + (curr[0] * Math.log(xVal))
-          }
-        }, (type !== 2) ? 0 : 1)
-      )
-    })
+    const solutionFunction = solutionToFunc(solution, type)
+    x.forEach(xVal => y.push(solutionFunction(xVal)))
 
     return (
       <Plot
