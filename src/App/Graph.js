@@ -42,7 +42,7 @@ class Graph extends Component {
         y.push(point.y)
       })
 
-      const solution = leastSqr(type, x, y, 4)
+      const solution = leastSqr(type, x, y, 9)
       this.setState({ solution })
     }
   }
