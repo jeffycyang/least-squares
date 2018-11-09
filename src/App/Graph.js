@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Plot from 'react-plotly.js'
-import { leastSqr, solutionToFunc } from '../lib/leastSquare'
+import { leastSqr, solutionToFunc, solutionToEquation } from '../lib/leastSquare'
 
 const typeMap = {
   poly: 0,
@@ -70,7 +70,7 @@ class Graph extends Component {
         y.push(point.y)
       })
 
-      const solution = leastSqr(type, x, y, 9)
+      const solution = leastSqr(type, x, y, 3)
       this.setState({ solution })
     }
   }
@@ -102,72 +102,75 @@ class Graph extends Component {
     const solutionFunction = solutionToFunc(solution, type)
     x.forEach(xVal => y.push(solutionFunction(xVal)))
 
+    return (
+      <div>
+        <Plot
+          data={[
+            {
+              x: dataX,
+              y: dataY,
+              type: 'scatter',
+              mode: 'markers',
+              marker: { color: 'blue' }
+            },
+            {
+              x,
+              y,
+              type: 'scatter',
+              mode: 'lines',
+              marker: { color: 'red' }
+            }
+          ]}
+          layout={{
+            width: 640,
+            height: 480,
+            title: 'Least Squares Regression'
+          }}
+          config={{ scrollZoom: true }}
+        />
+        <div dangerouslySetInnerHTML={{ __html: solutionToEquation(solution, type) }} />
+      </div>
+    )
+    // degree & other controls
+    // display equation
+
+    // // test surface plot
     // return (
     //   <Plot
     //     data={[
     //       {
-    //         x: dataX,
-    //         y: dataY,
-    //         type: 'scatter',
-    //         mode: 'markers',
-    //         marker: { color: 'blue' }
-    //       },
-    //       {
-    //         x,
-    //         y,
-    //         type: 'scatter',
-    //         mode: 'lines',
-    //         marker: { color: 'red' }
+    //         z: surfaceData,
+    //         type: 'surface',
+    //         contours: {
+    //           z: {
+    //             show: true,
+    //             usecolormap: true,
+    //             highlightcolor: '#42f62',
+    //             project: { z: true }
+    //           }
+    //         }
     //       }
     //     ]}
     //     layout={{
-    //       width: 640,
-    //       height: 480,
-    //       title: 'Least Squares Regression'
+    //       title: 'Multiple Regression',
+    //       scene: {
+    //         camera: { 
+    //           eye: { x: 1.87, y: 0.88, z: -0.64 }
+    //         }
+    //       },
+    //       autosize: false,
+    //       width: 500,
+    //       height: 500,
+    //       margin: {
+    //         l: 65,
+    //         r: 50,
+    //         b: 65,
+    //         t: 90,
+    //       }
     //     }}
     //     config={{ scrollZoom: true }}
     //   />
     // )
-    // degree & other controls
-    // display equation
-
-    // test surface plot
-    return (
-      <Plot
-        data={[
-          {
-            z: surfaceData,
-            type: 'surface',
-            contours: {
-              z: {
-                show: true,
-                usecolormap: true,
-                highlightcolor: '#42f62',
-                project: { z: true }
-              }
-            }
-          }
-        ]}
-        layout={{
-          title: 'Multiple Regression',
-          scene: {
-            camera: { 
-              eye: { x: 1.87, y: 0.88, z: -0.64 }
-            }
-          },
-          autosize: false,
-          width: 500,
-          height: 500,
-          margin: {
-            l: 65,
-            r: 50,
-            b: 65,
-            t: 90,
-          }
-        }}
-        config={{ scrollZoom: true }}
-      />
-    )
   }
 }
 
