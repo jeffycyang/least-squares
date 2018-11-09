@@ -265,26 +265,27 @@ export const solutionToFunc = (solution, type) =>
 export const solutionToEquation = (solution, type) =>
   `<span><var>f(x)</var> = ${
     solution.reduce((acc, curr, ind) => {
+      const term = Number(curr[0].toFixed(3))
       if (type === 0) {
-        if (ind === 0) return acc + curr[0]
-        return acc + `${curr[0] > 0 ? ` + ${curr[0]}` : ` <var>-</var> ${Math.abs(curr[0])}`}<var>x</var>${ind !== 1 ? `<sup>${ind}</sup>` : ''}`
+        if (ind === 0) return acc + term
+        return acc + `${term > 0 ? ` + ${term}` : ` <var>-</var> ${Math.abs(term)}`}<var>x</var>${ind !== 1 ? `<sup>${ind}</sup>` : ''}`
       }
 
       if (type === 1) {
-        if (ind === 0) return acc + curr[0]
+        if (ind === 0) return acc + term
         const period = Math.ceil(ind / 2) !== 1 ? Math.ceil(ind / 2) : ''
-        if (ind % 2 === 0) return acc + `${curr[0] > 0 ? ` + ${curr[0]}` : ` <var>-</var> ${Math.abs(curr[0])}`}cos(${period}<var>x</var>)`
-        if (ind % 2 === 1) return acc + `${curr[0] > 0 ? ` + ${curr[0]}` : ` <var>-</var> ${Math.abs(curr[0])}`}sin(${period}<var>x</var>)`
+        if (ind % 2 === 0) return acc + `${term > 0 ? ` + ${term}` : ` <var>-</var> ${Math.abs(term)}`}cos(${period}<var>x</var>)`
+        if (ind % 2 === 1) return acc + `${term > 0 ? ` + ${term}` : ` <var>-</var> ${Math.abs(term)}`}sin(${period}<var>x</var>)`
       }
 
       if (type === 2) {
-        if (ind === 0) return acc + curr[0]
-        if (ind === 1) return acc + `<var>e</var><sup>${curr[0]}<var>x</var></sup>`
+        if (ind === 0) return acc + term
+        if (ind === 1) return acc + `<var>e</var><sup>${term}<var>x</var></sup>`
       }
 
       if (type === 3) {
-        if (ind === 0) return acc + curr[0]
-        if (ind === 1) return acc + ` + ${curr[0]}ln(<var>x</var>)`
+        if (ind === 0) return acc + term
+        if (ind === 1) return acc + ` + ${term}ln(<var>x</var>)`
       }
     }, '')
   }</span>`
