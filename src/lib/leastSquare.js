@@ -241,7 +241,7 @@ export const leastSqr = (type, xVal, yVal, degree) => {
   return matrixMultiply(invXTX, xTY)
 }
 
-export const solutionToFunc = (solution, type) =>
+export const solutionToFunction = (solution, type) =>
   x => solution.reduce((acc, curr, ind) => {
     if (type === 0) return acc + (curr[0] * Math.pow(x, ind))
 
@@ -285,7 +285,7 @@ export const solutionToEquation = (solution, type) =>
 
       if (type === 3) {
         if (ind === 0) return acc + term
-        if (ind === 1) return acc + ` + ${term}ln(<var>x</var>)`
+        if (ind === 1) return acc + `${term > 0 ? ` + ${term}` : ` <var>-</var> ${Math.abs(term)}`}ln(<var>x</var>)`
       }
     }, '')
   }</span>`
