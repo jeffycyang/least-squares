@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import Graph from './Graph'
 import { randomSmall, trendMedium, testExp } from '../lib/sampleData'
 
+import Graph2D from './Graph2D'
+
 class App extends Component {
   state = {
     dataPoints: []
@@ -30,6 +32,7 @@ class App extends Component {
           equationType="trig" // poly, trig, exp, log
           dataPoints={dataPoints}
         />
+        <Graph2D />
       </div>
     )
   }

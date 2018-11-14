@@ -59,46 +59,44 @@ class Graph2D extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { dataPoints, equationType } = this.props
-    const type = typeMap[equationType]
 
-    if (dataPoints !== prevProps.dataPoints) {
-      const x =[], y = []
-      dataPoints.forEach(point => {
-        x.push(point.x)
-        y.push(point.y)
-      })
-
-      const solution = leastSqr(type, x, y, 3)
-      this.setState({ solution })
-    }
   }
 
   render() {
-    const { dataPoints, equationType } = this.props
-    const dataX =[], dataY = []
-    dataPoints.forEach(point => {
-      dataX.push(point.x)
-      dataY.push(point.y)
-    })
-
-    const { solution } = this.state
-
-    console.log('solution', solution)
-
+    const granularity = 500,
+          domain = [-10, 10],
+          increment = (domain[1] - domain[0]) / granularity
+    const x = []
     const y = []
-    const type = typeMap[equationType]
-    const solutionFunction = solutionToFunction(solution, type)
-    x.forEach(xVal => y.push(solutionFunction(xVal)))
+    let current = domain[0]
+    for (let i = 0; i < granularity; i++) {
+      x.push(current)
+      y.push(current)
+      current += increment
+    }
 
-    // degree & other controls
-    // display equation
+    const funcEq = (x, y) => Math.pow(x, 2) + (x * y) + Math.pow(y, 2)
+
+    const z = []
+    x.forEach(xVal => z.push(y.map(yVal => funcEq(xVal, yVal))))
+
+// var trace = {
+//   type: 'surface',
+//   x: [1, 10, 100],
+//   y: [100, 1000, 2000],
+//   z: [ [1,2,3], [2,3,4], [3,4,5] ]
+// }
+
+// Plotly.plot('graph', [trace])
+
     return (
       <Plot
         data={[
           {
-            z: surfaceData,
             type: 'surface',
+            x,
+            y,
+            z,
             contours: {
               z: {
                 show: true,
@@ -132,4 +130,41 @@ class Graph2D extends Component {
   }
 }
 
-export default Graph
+export default Graph2D
+
+    // return (
+    //   <Plot
+    //     data={[
+    //       {
+    //         z: surfaceData,
+    //         type: 'surface',
+    //         contours: {
+    //           z: {
+    //             show: true,
+    //             usecolormap: true,
+    //             highlightcolor: '#42f62',
+    //             project: { z: true }
+    //           }
+    //         }
+    //       }
+    //     ]}
+    //     layout={{
+    //       title: 'Multiple Regression',
+    //       scene: {
+    //         camera: { 
+    //           eye: { x: 1.87, y: 0.88, z: -0.64 }
+    //         }
+    //       },
+    //       autosize: false,
+    //       width: 500,
+    //       height: 500,
+    //       margin: {
+    //         l: 65,
+    //         r: 50,
+    //         b: 65,
+    //         t: 90,
+    //       }
+    //     }}
+    //     config={{ scrollZoom: true }}
+    //   />
+    // )
