@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Plot from 'react-plotly.js'
-import { leastSqr, solutionToFunction, solutionToEquation } from '../lib/leastSquare'
+import { leastSqr, leastSqrSurface, solutionToFunction, solutionToFunctionSurface, solutionToEquation } from '../lib/leastSquare'
 
 const typeMap = {
   poly: 0,
@@ -55,7 +55,21 @@ class Graph2D extends Component {
   }
 
   componentDidMount() {
+    const { dataPoints } = this.props
+    // const type = typeMap[equationType]
+    const type = 0
 
+    if (dataPoints.length > 0) {
+      const x =[], y = [], z = []
+      dataPoints.forEach(point => {
+        x.push(point.x)
+        y.push(point.y)
+        z.push(point.z)
+      })
+
+      const solution = leastSqrSurface(type, x, y, z, 3)
+      this.setState({ solution })
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -63,7 +77,7 @@ class Graph2D extends Component {
   }
 
   render() {
-    const granularity = 500,
+    const granularity = 100, // 500
           domain = [-10, 10],
           increment = (domain[1] - domain[0]) / granularity
     const x = []
@@ -75,10 +89,10 @@ class Graph2D extends Component {
       current += increment
     }
 
-    const funcEq = (x, y) => Math.pow(x, 2) + (x * y) + Math.pow(y, 2)
+    // const funcEq = (x, y) => Math.pow(x, 2) + (x * y) + Math.pow(y, 2)
+    // const z = []
+    // x.forEach(xVal => z.push(y.map(yVal => funcEq(xVal, yVal))))
 
-    const z = []
-    x.forEach(xVal => z.push(y.map(yVal => funcEq(xVal, yVal))))
 
 // var trace = {
 //   type: 'surface',
@@ -88,6 +102,20 @@ class Graph2D extends Component {
 // }
 
 // Plotly.plot('graph', [trace])
+
+
+console.log('solution2D', this.state.solution)
+  const solutionFunction = solutionToFunctionSurface(this.state.solution, 0, 3)
+  const z = []
+  x.forEach(xVal => z.push(y.map(yVal => solutionFunction(xVal, yVal))))
+
+  // data points
+  const dataX =[], dataY = [], dataZ = []
+  this.props.dataPoints.forEach(point => {
+    dataX.push(point.x)
+    dataY.push(point.y)
+    dataZ.push(point.z)
+  })
 
     return (
       <Plot
@@ -105,6 +133,14 @@ class Graph2D extends Component {
                 project: { z: true }
               }
             }
+          },
+          {
+            x: dataX,
+            y: dataY,
+            z: dataZ,
+            type: 'scatter3d',
+            mode: 'markers',
+            marker: { color: 'green' }
           }
         ]}
         layout={{

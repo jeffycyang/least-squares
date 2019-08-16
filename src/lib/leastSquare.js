@@ -111,6 +111,7 @@ export const matrixInvert = M => {
 }
 
 export const matrixMultiply = (Q, P) => {
+console.log('WHAT', Q)
   const qRows = Q.length,
         qCols = Q[0].length,
         pRows = P.length,
@@ -212,6 +213,146 @@ export const createY = (type, yValues) => {
 
   return yVector
 }
+
+
+
+// ===== Surface plot (start) =====
+// const combinationWithReplacement = (terms, k) => {
+//   const c = []
+//   let len = k
+
+//   if (len > terms.length) k = terms.length
+
+//   const recurse = (curr, j) => {
+//     if (curr.length === k) {
+//       c.push(curr)
+//       return
+//     }
+//     for (var i = j ; i < terms.length ; i++) {
+//       // recurse(curr.concat(terms[i]), 0)
+//       recurse(curr.concat(terms[i]), i + 1)
+//     }
+//   }
+
+//   recurse([], 0)
+
+//   return c 
+// }
+
+// GENERIC FUNCTIONS ------------------------------------------------------ start
+// concatMap :: (a -> [b]) -> [a] -> [b]
+const concatMap = (f, xs) => [].concat.apply([], xs.map(f));
+// dropWhile :: (a -> Bool) -> [a] -> [a]
+const dropWhile = (p, xs) => {
+    let i = 0;
+    for (let lng = xs.length;
+        (i < lng) && p(xs[i]); i++) {}
+    return xs.slice(i);
+};
+// enumFromTo :: Int -> Int -> [Int]
+const enumFromTo = (m, n) =>
+    Array.from({
+        length: Math.floor(n - m) + 1
+    }, (_, i) => m + i);
+// head :: [a] -> Maybe a
+const head = xs => xs.length ? xs[0] : undefined;
+// isNull :: [a] -> Bool
+const isNull = xs => (xs instanceof Array) ? xs.length < 1 : undefined;
+// length :: [a] -> Int
+const length = xs => xs.length;
+// map :: (a -> b) -> [a] -> [b]
+const map = (f, xs) => xs.map(f);
+// pure :: a -> [a]
+const pure = x => [x];
+// GENERIC FUNCTIONS ------------------------------------------------------ end
+const combinationWithReplacement = (xs, k) => {
+    const comb = (n, ys) => {
+        if (0 === n) return ys
+        if (isNull(ys)) return comb(n - 1, map(pure, xs))
+
+        return comb(n - 1, concatMap(zs => {
+            const h = head(zs)
+            return map(x => [x].concat(zs), dropWhile(x => x !== h, xs))
+        }, ys))
+    };
+    return comb(k, [])
+};
+
+export const createXY = (type, xValues, yValues, degree) => {
+  const xyArray = []
+
+  // type 0 - polynomial, 1 - trigonometric, 2 - exponential, 3 - logarithmic
+  // degree only matters for polynomial & trigonometric
+  for (let i = 0 ; i < xValues.length ; i++) {
+
+    if (type === 0) {
+        xyArray[i] = []
+        const terms = combinationWithReplacement(['x', 'y', 'c'], degree)
+console.log('TERMS', terms)
+
+        terms.forEach(term => {
+          const { x, y } = term.reduce((acc, curr) => {
+            if (curr === 'x') acc.x++
+            if (curr === 'y') acc.y++
+            return acc
+          }, { x: 0, y: 0 })
+          console.log(x, y)
+          // console.log(xValues[i], yValues[i])
+          xyArray[i].push(Math.pow(xValues[i], x) * Math.pow(yValues[i], y))
+        })
+    }
+
+  }
+
+  return xyArray
+}
+export const createZ = (type, zValues) => {
+  const zVector = []
+
+  for (let i = 0 ; i < zValues.length ; i++) {
+    zVector[i] = []
+    zVector[i].push(zValues[i])
+  }
+
+  // type 0 - polynomial, 1 - exponential, 2 - trigonometric, 3 - logarithmic
+  // only need to consider exponential
+  for (let j = 0 ; j < zValues.length ; j++) {
+    if (type === 2) zVector[j][0] = Math.log(zVector[j][0])
+  }
+
+  return zVector
+}
+export const leastSqrSurface = (type, xVal, yVal, zVal, degree) => {
+  const xM = createXY(type, xVal, yVal, degree),
+        yV = createZ(type, zVal),
+        xT = transposeArray(xM),
+        xTX = matrixMultiply(xT, xM),
+        invXTX = matrixInvert(xTX),
+        xTY = matrixMultiply(xT, yV)
+console.log('????', xTX)
+  return matrixMultiply(invXTX, xTY)
+}
+export const solutionToFunctionSurface = (solution, type, degree) => {
+
+  let terms
+  if (type === 0) terms = combinationWithReplacement(['x', 'y', 'c'], degree)
+    .map(term => 
+      term.reduce((acc, curr) => {
+        if (curr === 'x') acc.x++
+        if (curr === 'y') acc.y++
+        return acc
+      }, { x: 0, y: 0 })
+    )
+console.log('TERMS AGAIN', terms)
+  return (x, y) => solution.reduce((acc, curr, ind) => {
+// console.log('CURRENT TERM', terms[ind])
+    if (type === 0) return acc + (curr[0] * Math.pow(x, terms[ind].x) * Math.pow(y, terms[ind].y))
+
+  }, (type !== 2) ? 0 : 1)
+}
+// ===== Surface plot (end) =====
+
+
 
 export const transposeArray = arr => {
   const newArray = [],
