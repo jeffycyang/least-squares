@@ -288,7 +288,6 @@ export const createXY = (type, xValues, yValues, degree) => {
     if (type === 0) {
         xyArray[i] = []
         const terms = combinationWithReplacement(['x', 'y', 'c'], degree)
-console.log('TERMS', terms)
 
         terms.forEach(term => {
           const { x, y } = term.reduce((acc, curr) => {
@@ -296,8 +295,6 @@ console.log('TERMS', terms)
             if (curr === 'y') acc.y++
             return acc
           }, { x: 0, y: 0 })
-          console.log(x, y)
-          // console.log(xValues[i], yValues[i])
           xyArray[i].push(Math.pow(xValues[i], x) * Math.pow(yValues[i], y))
         })
     }
@@ -329,7 +326,6 @@ export const leastSqrSurface = (type, xVal, yVal, zVal, degree) => {
         xTX = matrixMultiply(xT, xM),
         invXTX = matrixInvert(xTX),
         xTY = matrixMultiply(xT, yV)
-console.log('????', xTX)
   return matrixMultiply(invXTX, xTY)
 }
 export const solutionToFunctionSurface = (solution, type, degree) => {
@@ -343,9 +339,9 @@ export const solutionToFunctionSurface = (solution, type, degree) => {
         return acc
       }, { x: 0, y: 0 })
     )
-console.log('TERMS AGAIN', terms)
+
   return (x, y) => solution.reduce((acc, curr, ind) => {
-// console.log('CURRENT TERM', terms[ind])
+
     if (type === 0) return acc + (curr[0] * Math.pow(x, terms[ind].x) * Math.pow(y, terms[ind].y))
 
   }, (type !== 2) ? 0 : 1)
